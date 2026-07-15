@@ -1,5 +1,10 @@
 # DataBuddy AI
 
+# Live Demo -
+
+[Open DataBuddy AI](https://your-real-app-link.streamlit.app)
+
+
 DataBuddy AI is a Python-based learning assistant created for Data Engineering beginners.
 
 It helps users understand technical topics, prepare for interviews, practice quizzes, ask questions from uploaded notes, and track learning progress.
