@@ -113,6 +113,12 @@ Student's question:
                     "Gemini is temporarily busy. "
                     "Please try the question again after a few seconds."
                 )
+            
+            if "429" in error_message or "RESOURCE_EXHAUSTED" in error_message:
+                return (
+                    "The daily AI request limit has been reached. "
+                    "Please try again later."
+                )
 
             if "nodename nor servname provided" in error_message:
                 return (
