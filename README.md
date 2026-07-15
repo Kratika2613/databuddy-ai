@@ -2,7 +2,7 @@
 
 # Live Demo -
 
-[Open DataBuddy AI](https://your-real-app-link.streamlit.app)
+[Open DataBuddy AI](https://databuddy-ai-y7cbvwj6tp2kdywqxe5ssy.streamlit.app)
 
 
 DataBuddy AI is a Python-based learning assistant created for Data Engineering beginners.
