@@ -1,0 +1,9 @@
+ETL stands for Extract, Transform, and Load.
+
+Extract means collecting data from different source systems.
+
+Transform means cleaning, validating, and changing the collected data.
+
+Load means storing the prepared data in a database or data warehouse.
+
+ETL helps companies combine data from different sources for reporting and analysis.
