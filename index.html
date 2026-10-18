@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DataBuddy AI - Enterprise Data Engineering Learning Platform & RAG Dashboard</title>
+  <meta name="description" content="Enterprise-grade AI learning assistant for Data Engineering beginners and professionals. Master ETL, Spark, Delta Lake, SQL, and RAG.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🤖</text></svg>">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Core Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- External CDNs for Rich Enterprise Functionality -->
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Marked for Markdown rendering -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <!-- PDF.js for client-side PDF parsing in Notes RAG -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script>
+    if (window.pdfjsLib) {
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    }
+  </script>
+  <!-- Canvas Confetti for quiz rewards -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+</head>
+<body>
+  <div class="app-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="logo-container">
+          <div class="logo-icon">DB</div>
+          <div class="logo-text">
+            <span class="logo-title">DataBuddy AI</span>
+            <span class="logo-badge">
+              <span class="pulse-dot"></span>
+              Enterprise v2.5
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <nav class="nav-section">
+        <span class="nav-label">Core Learning</span>
+        <a href="#" class="nav-item active" data-mode="beginner">
+          <span class="nav-icon"><i data-lucide="sparkles"></i></span>
+          <span>Beginner Mode</span>
+          <span class="nav-shortcut">1</span>
+        </a>
+        <a href="#" class="nav-item" data-mode="interview">
+          <span class="nav-icon"><i data-lucide="briefcase"></i></span>
+          <span>Interview Mode</span>
+          <span class="nav-shortcut">2</span>
+        </a>
+        <a href="#" class="nav-item" data-mode="technical">
+          <span class="nav-icon"><i data-lucide="terminal"></i></span>
+          <span>Technical Mode</span>
+          <span class="nav-shortcut">3</span>
+        </a>
+
+        <span class="nav-label" style="margin-top: 10px;">Practice & RAG</span>
+        <a href="#" class="nav-item" data-mode="quiz">
+          <span class="nav-icon"><i data-lucide="help-circle"></i></span>
+          <span>Quiz Arena</span>
+          <span class="nav-shortcut">4</span>
+        </a>
+        <a href="#" class="nav-item" data-mode="notes">
+          <span class="nav-icon"><i data-lucide="file-search"></i></span>
+          <span>RAG Notes Lab</span>
+          <span class="nav-shortcut">5</span>
+        </a>
+
+        <span class="nav-label" style="margin-top: 10px;">Analytics & Audit</span>
+        <a href="#" class="nav-item" data-mode="history">
+          <span class="nav-icon"><i data-lucide="history"></i></span>
+          <span>Learning History</span>
+          <span class="nav-shortcut">6</span>
+        </a>
+        <a href="#" class="nav-item" data-mode="dashboard">
+          <span class="nav-icon"><i data-lucide="bar-chart-3"></i></span>
+          <span>Performance Matrix</span>
+          <span class="nav-shortcut">7</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="quick-stats-card">
+          <div class="stat-row">
+            <span class="stat-label">Queries Logged:</span>
+            <span class="stat-val" id="quickQuestionsCount">0</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Quiz Accuracy:</span>
+            <span class="stat-val" id="quickAccuracy">0%</span>
+          </div>
+        </div>
+
+        <div class="system-status">
+          <span class="status-dot"></span>
+          <span>Client Engine Ready (100% Static)</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Workspace -->
+    <main class="main-wrapper">
+      <!-- Topbar Navigation -->
+      <header class="topbar">
+        <div class="breadcrumb-area">
+          <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle menu">
+            <i data-lucide="menu"></i>
+          </button>
+          <span class="active-mode-title" id="activeModeTitle">Beginner Mode</span>
+          <span class="mode-badge-pill" id="activeModeBadge">Concept Foundations</span>
+        </div>
+
+        <div class="topbar-actions">
+          <div class="model-selector-wrap">
+            <i data-lucide="bot" style="width:16px;height:16px;color:var(--accent-primary);"></i>
+            <select id="modelSelect">
+              <option value="gemini-1.5-flash">Gemini 1.5 Flash (Ultra Fast)</option>
+              <option value="gemini-2.5-flash">Gemini 2.5 Flash (Latest)</option>
+              <option value="gemini-1.5-pro">Gemini 1.5 Pro (Deep Reasoning)</option>
+            </select>
+          </div>
+
+          <button class="btn-enterprise btn-secondary" id="openSettingsBtn">
+            <i data-lucide="settings" style="width: 16px; height: 16px;"></i>
+            <span>API Settings</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Dynamic Viewport -->
+      <section class="content-body" id="contentBody">
+        <!-- Rendered by app.js -->
+      </section>
+    </main>
+  </div>
+
+  <!-- Settings & API Key Modal -->
+  <div class="modal-overlay" id="settingsModal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 style="font-size: 1.2rem; font-weight: 700; display: flex; align-items: center; gap: 8px;">
+          <i data-lucide="key" style="color:var(--accent-primary)"></i>
+          AI Engine Settings
+        </h3>
+        <button class="modal-close" id="closeSettingsBtn">&times;</button>
+      </div>
+
+      <div class="form-group">
+        <label for="apiKeyInput">Google Gemini API Key</label>
+        <input type="password" id="apiKeyInput" class="form-input" placeholder="AIzaSy... (Leave blank for Demo Mode)">
+        <p style="font-size:0.78rem; color:var(--text-muted); margin-top:6px; line-height:1.5;">
+          Your key is saved <strong>locally</strong> in your browser's localStorage. It is never transmitted to any third-party server.
+        </p>
+      </div>
+
+      <div style="background: rgba(139, 92, 246, 0.08); border: 1px solid var(--border-accent); border-radius: var(--radius-md); padding: 14px; margin-bottom: 20px; font-size: 0.85rem; color: #ddd6fe; line-height: 1.5;">
+        💡 <strong>Zero-Setup Demo Mode</strong>: If you do not have an API key right now, leave it empty! DataBuddy AI includes pre-configured realistic Data Engineering intelligence so you can immediately test all 7 modes, RAG, and quizzes.
+      </div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" style="font-size:0.82rem; color:var(--accent-secondary); text-decoration:none; display:flex; align-items:center; gap:4px;">
+          Get free Gemini Key <i data-lucide="external-link" style="width:13px;height:13px;"></i>
+        </a>
+        <button class="btn-enterprise btn-primary" id="saveApiKeyBtn">
+          Save Configuration
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Application Logic -->
+  <script src="js/storage-service.js"></script>
+  <script src="js/rag-service.js"></script>
+  <script src="js/ai-service.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
