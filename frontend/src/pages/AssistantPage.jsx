@@ -24,9 +24,22 @@ const PROMPT_SUGGESTIONS = [
   'Explain Kafka consumer group partition rebalancing',
 ];
 
+const INITIAL_WELCOME = {
+  id: 'init',
+  role: 'assistant',
+  mode: 'Beginner Mode',
+  content: `### Welcome to DataBuddy AI Learning Assistant 🚀\n\nI provide structured Data Engineering guidance tailored to your goal:\n\n* **Beginner Mode**: Conceptual intuition with clear real-world analogies.\n* **Interview Mode**: 4–7 line crisp responses with definitions and trade-offs.\n* **Senior Technical Mode**: Internal distributed mechanics, execution semantics, and code snippets.\n\nSelect a prompt below or type your question to start.`,
+  follow_ups: [
+    'What is an idempotent data pipeline and why is it essential?',
+    'Explain Spark Lazy Evaluation and how DAG execution works',
+    'What is the architectural difference between Star and Snowflake schemas?',
+  ],
+  created_at: 'Ready',
+};
+
 export default function AssistantPage() {
   const [mode, setMode] = useState('Beginner Mode');
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState([INITIAL_WELCOME]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [copiedId, setCopiedId] = useState(null);
@@ -47,22 +60,11 @@ export default function AssistantPage() {
           }))
         );
       } else {
-        setMessages([
-          {
-            id: 'init',
-            role: 'assistant',
-            mode: 'Beginner Mode',
-            content: `### Welcome to DataBuddy AI Learning Assistant 🚀\n\nI provide structured Data Engineering guidance tailored to your goal:\n\n* **Beginner Mode**: Conceptual intuition with clear real-world analogies.\n* **Interview Mode**: 4–7 line crisp responses with definitions and trade-offs.\n* **Senior Technical Mode**: Internal distributed mechanics, execution semantics, and code snippets.\n\nSelect a prompt below or type your question to start.`,
-            follow_ups: [
-              'What is an idempotent data pipeline?',
-              'Explain Apache Spark lazy evaluation',
-            ],
-            created_at: 'Ready',
-          },
-        ]);
+        setMessages([INITIAL_WELCOME]);
       }
     } catch (err) {
       console.warn('Could not load history:', err);
+      setMessages((prev) => (prev && prev.length > 0 ? prev : [INITIAL_WELCOME]));
     }
   };
 
