@@ -1,12 +1,11 @@
 # GitHub Linguist Configuration
-# Vendor generated build artifacts and third-party dependencies,
-# while properly counting source code (Python, React/JavaScript, CSS).
+# Mark frontend code as vendored & non-detectable so GitHub
+# recognizes Python as the primary language of the repository.
+frontend/** linguist-vendored linguist-detectable=false
 
-frontend/dist/** linguist-vendored
-frontend/node_modules/** linguist-vendored
-frontend/package-lock.json linguist-vendored
 *.lock linguist-vendored
 *.db binary
 *.sqlite binary
 *.sqlite3 binary
 *.txt linguist-documentation
+
