@@ -1,10 +1,12 @@
-# GitHub Linguist Language Configuration
-# Ensures Python is detected as the primary language of the repository
+# GitHub Linguist Configuration
+# Vendor generated build artifacts and third-party dependencies,
+# while properly counting source code (Python, React/JavaScript, CSS).
 
-frontend/** linguist-vendored
 frontend/dist/** linguist-vendored
 frontend/node_modules/** linguist-vendored
+frontend/package-lock.json linguist-vendored
 *.lock linguist-vendored
 *.db binary
+*.sqlite binary
+*.sqlite3 binary
 *.txt linguist-documentation
-*.md linguist-documentation

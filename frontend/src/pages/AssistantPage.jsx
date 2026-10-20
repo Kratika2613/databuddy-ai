@@ -10,6 +10,8 @@ import {
   User,
   ArrowRight,
   MessageSquare,
+  Bot,
+  Compass,
 } from 'lucide-react';
 import { marked } from 'marked';
 import { fetchChatHistory, sendChatMessage } from '../services/api';
@@ -50,7 +52,7 @@ export default function AssistantPage() {
             id: 'init',
             role: 'assistant',
             mode: 'Beginner Mode',
-            content: `### Welcome to DataBuddy AI Learning Assistant 📚\n\nI provide structured Data Engineering guidance tailored to your goal:\n\n* **Beginner Mode**: Conceptual intuition with clear real-world analogies.\n* **Interview Mode**: 4–7 line crisp responses with definitions and trade-offs.\n* **Technical Mode**: Internal mechanics, execution semantics, and code snippets.\n\nSelect a prompt below or type your question to start.`,
+            content: `### Welcome to DataBuddy AI Learning Assistant 🚀\n\nI provide structured Data Engineering guidance tailored to your goal:\n\n* **Beginner Mode**: Conceptual intuition with clear real-world analogies.\n* **Interview Mode**: 4–7 line crisp responses with definitions and trade-offs.\n* **Senior Technical Mode**: Internal distributed mechanics, execution semantics, and code snippets.\n\nSelect a prompt below or type your question to start.`,
             follow_ups: [
               'What is an idempotent data pipeline?',
               'Explain Apache Spark lazy evaluation',
@@ -118,29 +120,30 @@ export default function AssistantPage() {
   };
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-slate-950 overflow-hidden">
+    <div className="flex-1 flex flex-col h-full bg-[#090d16] overflow-hidden">
       {/* Mode Bar */}
-      <div className="px-6 py-2.5 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-xs">
+      <div className="px-6 py-3 bg-slate-900/80 backdrop-blur-md border-b border-slate-800/80 flex items-center justify-between text-xs z-10">
         <div className="flex items-center gap-3">
-          <span className="font-semibold text-slate-300">Pedagogic Lens:</span>
-          <div className="flex rounded-lg bg-slate-800 p-0.5 border border-slate-700/60">
+          <span className="font-bold text-slate-300">Pedagogic Lens:</span>
+          <div className="flex rounded-xl bg-slate-950/80 p-1 border border-slate-800">
             {[
-              { id: 'Beginner Mode', label: 'Beginner', icon: Sparkles },
-              { id: 'Interview Mode', label: 'Interview', icon: Briefcase },
-              { id: 'Technical Mode', label: 'Senior Technical', icon: Cpu },
+              { id: 'Beginner Mode', label: 'Beginner', icon: Sparkles, color: 'text-emerald-400' },
+              { id: 'Interview Mode', label: 'Interview', icon: Briefcase, color: 'text-amber-400' },
+              { id: 'Technical Mode', label: 'Senior Technical', icon: Cpu, color: 'text-indigo-400' },
             ].map((m) => {
               const Icon = m.icon;
+              const isSelected = mode === m.id;
               return (
                 <button
                   key={m.id}
                   onClick={() => setMode(m.id)}
-                  className={`flex items-center gap-1.5 px-3 py-1 rounded-md transition text-xs font-medium ${
-                    mode === m.id
-                      ? 'bg-blue-600 text-white shadow-sm'
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition text-xs font-semibold ${
+                    isSelected
+                      ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20'
                       : 'text-slate-400 hover:text-slate-200'
                   }`}
                 >
-                  <Icon className="w-3 h-3" />
+                  <Icon className={`w-3.5 h-3.5 ${isSelected ? 'text-white' : m.color}`} />
                   <span>{m.label}</span>
                 </button>
               );
@@ -150,153 +153,166 @@ export default function AssistantPage() {
 
         <button
           onClick={() => loadHistory()}
-          className="text-slate-400 hover:text-slate-200 flex items-center gap-1 text-[11px]"
+          className="text-slate-400 hover:text-slate-200 flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg bg-slate-800/50 hover:bg-slate-800 border border-slate-700/50 transition"
         >
-          <RotateCcw className="w-3 h-3" /> Sync Memory
+          <RotateCcw className="w-3.5 h-3.5" />
+          <span>Sync Memory</span>
         </button>
       </div>
 
       {/* Messages Scroll View */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-6">
-        {messages.map((msg) => (
-          <div
-            key={msg.id}
-            className={`flex gap-3 max-w-4xl ${msg.role === 'user' ? 'ml-auto justify-end' : ''}`}
-          >
-            {msg.role === 'assistant' && (
-              <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center shrink-0 text-white font-bold text-xs mt-1">
-                DB
-              </div>
-            )}
-
+      <div className="flex-1 overflow-y-auto p-6 lg:p-8 space-y-6">
+        <div className="max-w-4xl mx-auto space-y-6">
+          {messages.map((msg) => (
             <div
-              className={`rounded-xl p-4 transition ${
-                msg.role === 'user'
-                  ? 'bg-blue-600 text-white max-w-xl shadow-sm'
-                  : 'bg-slate-900 border border-slate-800 text-slate-200 w-full shadow-sm'
-              }`}
+              key={msg.id}
+              className={`flex gap-3.5 ${msg.role === 'user' ? 'ml-auto justify-end' : ''}`}
             >
-              <div className="flex items-center justify-between text-xs pb-2 mb-2 border-b border-slate-800/80">
-                <span className="font-semibold text-slate-300">
-                  {msg.role === 'user' ? 'You' : 'DataBuddy AI'}
-                </span>
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] text-slate-500 font-mono">{msg.created_at}</span>
-                  {msg.role === 'assistant' && (
-                    <button
-                      onClick={() => handleCopy(msg.id, msg.content)}
-                      className="text-slate-400 hover:text-slate-200"
-                      title="Copy"
-                    >
-                      {copiedId === msg.id ? (
-                        <Check className="w-3.5 h-3.5 text-emerald-400" />
-                      ) : (
-                        <Copy className="w-3.5 h-3.5" />
-                      )}
-                    </button>
-                  )}
+              {msg.role === 'assistant' && (
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center shrink-0 text-white font-bold text-xs shadow-md shadow-blue-500/20 mt-1">
+                  DB
                 </div>
-              </div>
-
-              {msg.role === 'assistant' ? (
-                <div
-                  className="prose-dark"
-                  dangerouslySetInnerHTML={{ __html: marked.parse(msg.content) }}
-                />
-              ) : (
-                <p className="text-xs leading-relaxed whitespace-pre-wrap">{msg.content}</p>
               )}
 
-              {/* Follow-up Questions Chips */}
-              {msg.role === 'assistant' && msg.follow_ups && msg.follow_ups.length > 0 && (
-                <div className="mt-4 pt-3 border-t border-slate-800 space-y-1.5">
-                  <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">
-                    Recommended Follow-ups:
-                  </span>
-                  <div className="flex flex-wrap gap-1.5">
-                    {msg.follow_ups.map((fu, idx) => (
+              <div
+                className={`rounded-2xl p-5 transition-all ${
+                  msg.role === 'user'
+                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white max-w-xl shadow-lg shadow-blue-600/15'
+                    : 'surface-card text-slate-200 w-full shadow-lg'
+                }`}
+              >
+                <div className="flex items-center justify-between text-xs pb-2.5 mb-2.5 border-b border-slate-800/70">
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-slate-200">
+                      {msg.role === 'user' ? 'You' : 'DataBuddy AI'}
+                    </span>
+                    {msg.role === 'assistant' && msg.mode && (
+                      <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                        {msg.mode}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] text-slate-400 font-mono">{msg.created_at}</span>
+                    {msg.role === 'assistant' && (
                       <button
-                        key={idx}
-                        onClick={() => handleSend(fu)}
-                        disabled={isLoading}
-                        className="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-750 text-slate-300 hover:text-white border border-slate-700/60 text-xs transition flex items-center gap-1.5 text-left"
+                        onClick={() => handleCopy(msg.id, msg.content)}
+                        className="p-1 rounded text-slate-400 hover:text-slate-200 transition"
+                        title="Copy"
                       >
-                        <ArrowRight className="w-3 h-3 text-blue-400 shrink-0" />
-                        <span>{fu}</span>
+                        {copiedId === msg.id ? (
+                          <Check className="w-3.5 h-3.5 text-emerald-400" />
+                        ) : (
+                          <Copy className="w-3.5 h-3.5" />
+                        )}
                       </button>
-                    ))}
+                    )}
                   </div>
                 </div>
+
+                {msg.role === 'assistant' ? (
+                  <div
+                    className="prose-dark"
+                    dangerouslySetInnerHTML={{ __html: marked.parse(msg.content) }}
+                  />
+                ) : (
+                  <p className="text-sm leading-relaxed whitespace-pre-wrap font-medium">{msg.content}</p>
+                )}
+
+                {/* Follow-up Questions Chips */}
+                {msg.role === 'assistant' && msg.follow_ups && msg.follow_ups.length > 0 && (
+                  <div className="mt-5 pt-3.5 border-t border-slate-800/80 space-y-2">
+                    <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+                      Explore Deeper:
+                    </span>
+                    <div className="flex flex-wrap gap-2">
+                      {msg.follow_ups.map((fu, idx) => (
+                        <button
+                          key={idx}
+                          onClick={() => handleSend(fu)}
+                          disabled={isLoading}
+                          className="px-3 py-1.5 rounded-lg bg-slate-950/80 hover:bg-slate-850 text-slate-300 hover:text-white border border-slate-800 hover:border-blue-500/40 text-xs transition flex items-center gap-2 text-left shadow-sm group"
+                        >
+                          <ArrowRight className="w-3 h-3 text-blue-400 group-hover:translate-x-0.5 transition-transform shrink-0" />
+                          <span>{fu}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {msg.role === 'user' && (
+                <div className="w-9 h-9 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center shrink-0 text-slate-300 mt-1 shadow-md">
+                  <User className="w-4 h-4" />
+                </div>
               )}
             </div>
+          ))}
 
-            {msg.role === 'user' && (
-              <div className="w-8 h-8 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center shrink-0 text-slate-300 mt-1">
-                <User className="w-4 h-4" />
+          {isLoading && (
+            <div className="flex gap-3 max-w-2xl">
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center shrink-0 text-white text-xs animate-pulse">
+                DB
               </div>
-            )}
-          </div>
-        ))}
-
-        {isLoading && (
-          <div className="flex gap-3 max-w-2xl">
-            <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center shrink-0 text-white text-xs">
-              DB
+              <div className="p-4 rounded-2xl surface-card text-xs text-slate-300 flex items-center gap-3">
+                <div className="flex space-x-1.5">
+                  <div className="w-2 h-2 rounded-full bg-blue-500 animate-bounce"></div>
+                  <div className="w-2 h-2 rounded-full bg-indigo-500 animate-bounce [animation-delay:0.2s]"></div>
+                  <div className="w-2 h-2 rounded-full bg-cyan-400 animate-bounce [animation-delay:0.4s]"></div>
+                </div>
+                <span>Synthesizing pedagogical explanation via Gemini...</span>
+              </div>
             </div>
-            <div className="p-4 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-400 flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-blue-400 animate-ping"></span>
-              <span>Analyzing and generating structured response via Gemini...</span>
-            </div>
-          </div>
-        )}
+          )}
 
-        <div ref={endRef} />
+          <div ref={endRef} />
+        </div>
       </div>
 
-      {/* Quick Prompt Suggestions */}
-      <div className="px-6 py-2 border-t border-slate-800 bg-slate-900/60 overflow-x-auto no-scrollbar flex items-center gap-2">
-        <span className="text-[11px] font-semibold text-slate-500 whitespace-nowrap">Suggested:</span>
+      {/* Suggested Prompts Bar */}
+      <div className="px-6 py-2.5 border-t border-slate-800/80 bg-slate-900/60 overflow-x-auto no-scrollbar flex items-center gap-2">
+        <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap flex items-center gap-1">
+          <Compass className="w-3 h-3 text-blue-400" /> Prompts:
+        </span>
         {PROMPT_SUGGESTIONS.map((p, idx) => (
           <button
             key={idx}
             onClick={() => handleSend(p)}
             disabled={isLoading}
-            className="px-2.5 py-1 rounded-md bg-slate-800/80 hover:bg-slate-750 text-slate-300 hover:text-white border border-slate-700/50 text-[11px] whitespace-nowrap transition"
+            className="px-3 py-1 rounded-lg bg-slate-950/80 hover:bg-slate-850 text-slate-300 hover:text-white border border-slate-800 hover:border-slate-700 text-xs whitespace-nowrap transition"
           >
             {p}
           </button>
         ))}
       </div>
 
-      {/* Input Form */}
-      <div className="p-4 px-6 border-t border-slate-800 bg-slate-900">
+      {/* Modern Floating Input Area */}
+      <div className="p-4 px-6 border-t border-slate-800/80 bg-slate-900/90 backdrop-blur-md">
         <form
           onSubmit={(e) => {
             e.preventDefault();
             handleSend();
           }}
-          className="flex items-end gap-3 max-w-5xl mx-auto"
+          className="flex items-center gap-3 max-w-4xl mx-auto"
         >
           <div className="relative flex-1">
-            <textarea
-              rows={2}
+            <input
+              type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                  e.preventDefault();
-                  handleSend();
-                }
-              }}
               placeholder={`Ask DataBuddy in ${mode}... (e.g. "How does Spark Catalyst optimize query plans?")`}
-              className="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 resize-none font-sans"
+              className="w-full bg-slate-950/90 border border-slate-700/80 rounded-xl px-4 py-3 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 font-sans shadow-inner"
             />
+            <span className="absolute right-3.5 top-3 text-[10px] text-slate-500 font-mono pointer-events-none">
+              Press Enter ↵
+            </span>
           </div>
 
           <button
             type="submit"
             disabled={!input.trim() || isLoading}
-            className="h-10 px-5 rounded-xl bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-medium text-xs flex items-center gap-2 shadow-sm transition shrink-0 cursor-pointer"
+            className="h-11 px-6 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 disabled:opacity-50 text-white font-semibold text-xs flex items-center gap-2 shadow-lg shadow-blue-600/20 transition shrink-0 cursor-pointer"
           >
             <Send className="w-3.5 h-3.5" />
             <span>Send</span>
