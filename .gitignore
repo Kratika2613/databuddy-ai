@@ -4,5 +4,11 @@ __pycache__/
 *.pyc
 .DS_Store
 databuddy.db
+*.sqlite
+*.sqlite3
+*.db-journal
+.pytest_cache/
 *.zip
 PROJECT_CONTEXT*.md
+frontend/node_modules/
+frontend/.vite/
